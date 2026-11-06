@@ -34,6 +34,18 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Checkout HTB writeups repository
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/HTB-Writeups
+          path: .htb-writeups
+          fetch-depth: 0
+
+      - name: Import HTB writeups
+        continue-on-error: true
+        run: node scripts/import-htb.mjs
+
       - name: Build writeups
         run: node scripts/build-site.mjs
 
@@ -53,6 +65,7 @@ jobs:
           find . -maxdepth 1 -mindepth 1 \
             ! -name '.git*' \
             ! -name '.github' \
+            ! -name '.htb-writeups' \
             ! -name 'scripts' \
             ! -name 'node_modules' \
             ! -name '_site' \
@@ -60,6 +73,7 @@ jobs:
             ! -name '*.backup' \
             -exec cp -r {} _site/ \;
           rm -rf _site/writeups/_*
+          rm -f _site/data/htb-publish.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
