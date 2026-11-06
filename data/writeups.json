@@ -63,12 +63,12 @@
     "slug": "monitorsfour",
     "title": "MonitorsFour",
     "date": "2026-05-23",
-    "category": "Easy",
+    "category": "Medium",
     "platform": "HackTheBox",
-    "difficulty": 1,
-    "tags": ["htb", "easy", "windows", "web"],
+    "difficulty": 2,
+    "tags": ["htb", "medium", "windows", "web"],
     "summary": "IDOR probing, hash cracking, and an application-level RCE chain on a Windows target.",
-    "source": "HackTheBox/Easy/MonitorsFour.md",
+    "source": "HackTheBox/Medium/monitorfour.md",
     "sample": false
   },
   {
