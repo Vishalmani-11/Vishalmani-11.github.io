@@ -16,11 +16,6 @@ const create = (tag, attrs = {}, ...children) => {
 const LV = ['Easy', 'Medium', 'Hard', 'Insane'];
 const DATA_PATH = 'data';
 
-function projectDetailUrl(repoName) {
-  const repo = (repoName || '').trim();
-  return repo ? `project.html?repo=${encodeURIComponent(repo)}` : '#';
-}
-
 // ============================================
 // Difficulty Bars
 // ============================================
@@ -63,11 +58,15 @@ async function loadAllData() {
   writeupsData = Array.isArray(w) ? w : (w?.data || []);
   // The inner pages (projects, writeups, writeup) read their data from window.
   Object.assign(window, { profileData, projectsData, writeupsData, achievementsData, githubData });
-  return { profileData, projectsData, writeupsData, achievementsData, githubData };
 }
 
-window.loadAllData = loadAllData;
-window.projectDetailUrl = projectDetailUrl;
+// Link to a repo's README on GitHub. Works for any repo name and any capitalisation.
+function repoReadmeUrl(name) {
+  if (!name) return null;
+  const gh = githubData?.repos?.find(r => r.name.toLowerCase() === String(name).toLowerCase());
+  const owner = (profileData?.github || 'https://github.com/vishalmani-11').replace(/\/+$/, '');
+  return `${gh?.html_url || `${owner}/${encodeURIComponent(name)}`}#readme`;
+}
 
 // ============================================
 // Render Functions
@@ -168,8 +167,8 @@ function renderProjects() {
 
     return create('a', {
       class: 'card',
-      href: projectDetailUrl(p.repo || p.name),
-      rel: 'noopener noreferrer'
+      href: repoReadmeUrl(p.repo) || '#',
+      ...(p.repo ? { target: '_blank', rel: 'noopener noreferrer' } : {})
     }, [
       create('div', { class: 'ct' }, [
         create('span', { class: 'n' }, String(i + 1).padStart(2, '0')),
@@ -193,9 +192,13 @@ function renderProjects() {
     moreList.replaceChildren(...otherRepos.map(repo => {
       const isSample = repo.sample;
       const title = isSample ? create('span', {}, [repo.title || repo.repo || 'Untitled', create('span', { class: 'sample-badge' }, 'Sample')]) : repo.title || repo.repo || 'Untitled';
-      const ghRepo = githubData?.repos?.find(r => r.name === repo.repo);
+      const ghRepo = githubData?.repos?.find(r => r.name.toLowerCase() === String(repo.repo || '').toLowerCase());
 
-      return create('div', { class: 'repo-item' }, [
+      return create('a', {
+        class: 'repo-item',
+        href: repoReadmeUrl(repo.repo) || '#',
+        ...(repo.repo ? { target: '_blank', rel: 'noopener noreferrer' } : {})
+      }, [
         create('h4', {}, title),
         create('p', {}, repo.summary || ghRepo?.description || 'No description'),
         create('div', { class: 'stt' }, [
