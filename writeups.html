@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#13111f">
+<meta name="description" content="Security CTF writeups by Vishal M">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<title>Writeups | Vishal M Portfolio</title>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<div class="scan" aria-hidden="true"></div>
+
+<aside class="side" aria-label="Main navigation">
+  <a class="logo" href="index.html"><span class="mk" aria-hidden="true">V</span><span>Vishal M</span></a>
+  <nav class="grp">
+    <a class="item" href="index.html#top" aria-label="Home"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Home</span></a>
+    <a class="item" href="projects.html" aria-label="Projects"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>Projects</span></a>
+    <a class="item on" href="writeups.html" aria-label="Writeups"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg><span>Writeups</span></a>
+    <a class="item" href="index.html#contact" aria-label="Contact"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Contact</span></a>
+  </nav>
+  <div class="grp foot-s"></div>
+</aside>
+
+<div class="topr" role="group" aria-label="External links">
+  <a class="btn" href="https://github.com/vishalmani-11" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <a class="btn s" href="index.html#contact">Hire me</a>
+</div>
+
+<main class="main" id="main-content">
+  <div class="w">
+    <header class="sh">
+      <h1>All writeups</h1>
+      <a href="index.html#writeups" class="btn">Back to home</a>
+    </header>
+
+    <div class="filters">
+      <input type="text" class="search-box" id="writeup-search" placeholder="Search writeups...">
+    </div>
+
+    <div class="filters" id="category-filters">
+      <span class="filter-chip active" onclick="setCategory('')">All categories</span>
+    </div>
+
+    <div class="filters" id="difficulty-filters">
+      <span class="filter-chip active" onclick="setDifficulty('')">All difficulties</span>
+      <span class="filter-chip" onclick="setDifficulty('1')">Easy</span>
+      <span class="filter-chip" onclick="setDifficulty('2')">Medium</span>
+      <span class="filter-chip" onclick="setDifficulty('3')">Hard</span>
+      <span class="filter-chip" onclick="setDifficulty('4')">Insane</span>
+    </div>
+
+    <div class="cases" id="all-writeups">
+      <div class="loading">Loading writeups...</div>
+    </div>
+
+    <div class="load-more" id="load-more-container">
+      <button class="btn" onclick="loadMore()" id="load-more-btn" hidden>Load more</button>
+    </div>
+  </div>
+</main>
+
+<footer><div class="w"><div class="fg">
+  <div><b style="color:var(--hi)">Vishal M</b><p id="footer-tagline">Cybersecurity Engineer | Ethical Hacker</p></div>
+  <div><h4>Portfolio</h4><a href="index.html">Home</a><a href="projects.html">Projects</a><a href="writeups.html">Writeups</a></div>
+  <div><h4>Connect</h4><a href="https://github.com/vishalmani-11" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+</div>
+<div class="fb"><span>&copy; 2026 Vishal M</span></div></div></footer>
+
+<script src="main.js"></script>
+<script>
+// Helper function for creating elements (same as in main.js)
+const create = (tag, attrs = {}, ...children) => {
+  const el = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  el.append(...children.flat());
+  return el;
+};
+
+// Writeups page specific logic
+let allWriteups = [];
+let filteredWriteups = [];
+let displayedCount = 10;
+let currentCategory = '';
+let currentDifficulty = '';
+
+function normalizeCategory(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  const lowered = text.toLowerCase();
+  if (lowered === 'fortress' || lowered === 'fortresses') return 'Fortress';
+  return text.replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
+async function initWriteupsPage() {
+  await window.loadAllData();
+  allWriteups = window.writeupsData || [];
+  
+  renderCategoryFilters();
+  filterWriteups();
+  
+  document.getElementById('writeup-search')?.addEventListener('input', () => filterWriteups());
+}
+
+function setCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('#category-filters .filter-chip').forEach(el => {
+    const isActive = (cat === '' && el.textContent.trim() === 'All categories') || normalizeCategory(el.textContent) === normalizeCategory(cat);
+    el.classList.toggle('active', isActive);
+  });
+  filterWriteups();
+}
+
+function setDifficulty(diff) {
+  currentDifficulty = diff;
+  document.querySelectorAll('#difficulty-filters .filter-chip').forEach(el => {
+    const isActive = (diff === '' && el.textContent.trim() === 'All difficulties') || el.textContent.trim() === ({ '1': 'Easy', '2': 'Medium', '3': 'Hard', '4': 'Insane' }[diff] || '');
+    el.classList.toggle('active', isActive);
+  });
+  filterWriteups();
+}
+
+function renderCategoryFilters() {
+  const container = document.getElementById('category-filters');
+  if (!container) return;
+  
+  const categoryOrder = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortress'];
+  const categories = [...new Set(allWriteups.map(w => normalizeCategory(w.category)).filter(Boolean))]
+    .sort((a, b) => {
+      const ia = categoryOrder.indexOf(a);
+      const ib = categoryOrder.indexOf(b);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      return a.localeCompare(b);
+    });
+
+  container.replaceChildren(
+    create('span', { class: 'filter-chip active', onclick: 'setCategory("")' }, 'All categories'),
+    ...categories.map(cat => create('span', { class: 'filter-chip', onclick: `setCategory('${cat}')` }, cat))
+  );
+}
+
+function filterWriteups() {
+  const searchTerm = document.getElementById('writeup-search')?.value.toLowerCase() || '';
+  
+  filteredWriteups = allWriteups.filter(w => {
+    const title = (w.title || '').toLowerCase();
+    const summary = (w.summary || '').toLowerCase();
+    const category = normalizeCategory(w.category || '').toLowerCase();
+    const platform = (w.platform || '').toLowerCase();
+    const tags = (w.tags || []).join(' ').toLowerCase();
+    const date = (w.date || '').toLowerCase();
+    
+    const matchesSearch = !searchTerm || title.includes(searchTerm) || summary.includes(searchTerm) || category.includes(searchTerm) || platform.includes(searchTerm) || tags.includes(searchTerm) || date.includes(searchTerm);
+    const matchesCategory = !currentCategory || category === normalizeCategory(currentCategory).toLowerCase();
+    const matchesDifficulty = !currentDifficulty || String(w.difficulty || 1) === currentDifficulty;
+    
+    return matchesSearch && matchesCategory && matchesDifficulty;
+  });
+  
+  // Sort by date descending (newest first)
+  filteredWriteups.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  
+  displayedCount = 10;
+  renderWriteups();
+}
+
+function renderWriteups() {
+  const container = document.getElementById('all-writeups');
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  if (!container) return;
+  
+  if (filteredWriteups.length === 0) {
+    container.replaceChildren(create('div', { class: 'empty-state' }, [
+      create('h3', {}, 'No writeups found'),
+      create('p', {}, 'Try adjusting your filters')
+    ]));
+    if (loadMoreBtn) loadMoreBtn.hidden = true;
+    return;
+  }
+  
+  const toShow = filteredWriteups.slice(0, displayedCount);
+  container.replaceChildren(...toShow.map(w => {
+    const date = w.date ? new Date(w.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown';
+    const isSample = w.sample;
+    const title = isSample ? create('span', {}, [w.title || 'Untitled', create('span', { class: 'sample-badge' }, 'Sample')]) : w.title || 'Untitled';
+    const category = normalizeCategory(w.category || 'Uncategorized');
+    
+    return create('a', { 
+      class: 'row',
+      href: `writeup.html?slug=${w.slug}`
+    }, [
+      create('span', { class: 'd' }, date),
+      create('div', {}, [
+        create('b', {}, title),
+        create('small', {}, w.summary || '')
+      ]),
+      create('span', { class: 'c' }, category),
+      difficultyBars(w.difficulty || 1)
+    ]);
+  }));
+  
+  // Show/hide load more button
+  if (loadMoreBtn) {
+    loadMoreBtn.hidden = displayedCount >= filteredWriteups.length;
+  }
+}
+
+function loadMore() {
+  displayedCount += 10;
+  renderWriteups();
+  document.getElementById('all-writeups')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWriteupsPage);
+} else {
+  initWriteupsPage();
+}
+</script>
+</body>
+</html>

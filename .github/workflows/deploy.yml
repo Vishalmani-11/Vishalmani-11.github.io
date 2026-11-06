@@ -1,0 +1,82 @@
+name: Deploy Portfolio to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-portfolio
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Clone public HTB writeups repository
+        run: git clone --depth 1 "https://github.com/${GITHUB_REPOSITORY_OWNER}/HTB-Writeups.git" .htb-writeups
+
+      - name: Import HTB writeups
+        run: node scripts/import-htb.mjs
+
+      - name: Build writeups
+        run: node scripts/build-site.mjs
+
+      - name: Fetch GitHub data
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USER: vishalmani-11
+        run: node scripts/fetch-github.mjs
+
+      - name: Create _site directory
+        run: mkdir -p _site
+
+      - name: Copy public files
+        run: |
+          mkdir -p _site
+          find . -maxdepth 1 -mindepth 1 \
+            ! -name '.git*' \
+            ! -name '.github' \
+            ! -name '.htb-writeups' \
+            ! -name 'scripts' \
+            ! -name 'node_modules' \
+            ! -name '_site' \
+            ! -name 'README.md' \
+            ! -name '*.backup' \
+            -exec cp -r {} _site/ \;
+          rm -rf _site/writeups/_*
+          rm -f _site/data/htb-publish.json
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

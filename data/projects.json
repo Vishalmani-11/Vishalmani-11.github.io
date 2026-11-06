@@ -1,0 +1,13 @@
+[
+  {
+    "repo": "portfolio",
+    "title": "Personal Portfolio",
+    "summary": "A static, data-driven portfolio built with vanilla HTML, CSS, and JavaScript.",
+    "difficulty": 3,
+    "status": "Live",
+    "featured": true,
+    "tags": ["HTML", "CSS", "JavaScript"],
+    "demo": "https://vishalmani-11.github.io",
+    "sample": false
+  }
+]

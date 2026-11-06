@@ -1,0 +1,23 @@
+{
+  "name": "Vishal M",
+  "github": "https://github.com/vishalmani-11",
+  "tagline": "Cybersecurity Engineer | Ethical Hacker | Security Researcher | Cybersecurity Student | Pentesting & Red Teaming | Web Security | Active Directory | HTB Global Rank #717 | HTB - Professional Rank |",
+  "bio": "I am a Computer Science and Engineering student specializing in Cybersecurity, focused on penetration testing, web application security, Active Directory security, OSINT, and digital forensics. I enjoy solving hands-on security challenges, investigating vulnerabilities, and building practical security tools. My work includes AI-based Projects, OSINT CTF challenges, and security research.",
+  "email": "vishalmaniarumukam@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/vishal-m-905b78327",
+  "location": "Tamil Nadu, India",
+  "education": {
+    "college": "Dr. Mahalingam College of Engineering and Technology, Pollachi",
+    "course": "B.E. Computer Science and Engineering (Cybersecurity)",
+    "years": "2023-2027"
+  },
+  "skills": {
+    "Languages": ["Python", "Bash"],
+    "Web": [],
+    "Security": ["Penetration Testing", "Web Security", "Linux Privilege Escalation", "Active Directory Security", "OSINT", "Digital Forensics", "CTF Challenges"],
+    "Tools": ["Nmap", "Burp Suite", "Wireshark", "BloodHound", "Metasploit", "Gobuster", "Nuclei", "Others Too..."]
+  },
+  "languages": ["English", "Tamil"],
+  "interests": ["Penetration Testing", "Web Application Security", "Active Directory Security", "OSINT", "Digital Forensics", "Security Research", "AI-Assisted Cybersecurity"],
+  "resume": null
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vishal Mani Writeups</title>
+    <link>https://vishalmani-11.github.io/</link>
+    <description>Security CTF writeups by Vishal Mani</description>
+    <language>en-US</language>
+    <pubDate>2026-01-01T00:00:00.000Z</pubDate>
+    <lastBuildDate>2026-10-25T19:38:42.694Z</lastBuildDate>
+    <atom:link href="https://vishalmani-11.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sample Writeup</title>
+      <link>https://vishalmani-11.github.io/writeup.html?slug=sample-writeup</link>
+      <description>This is a sample writeup to demonstrate the format and features</description>
+      <pubDate>2026-01-01T00:00:00.000Z</pubDate>
+      <category>Web</category>
+      <guid>https://vishalmani-11.github.io/writeup.html?slug=sample-writeup</guid>
+    </item>
+  </channel>
+</rss>

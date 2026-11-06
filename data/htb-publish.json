@@ -1,0 +1,6 @@
+{
+  "_note": "Paths listed in exclude are NOT published. Add active (unretired) HTB machines here.",
+  "exclude": [
+    "HackTheBox/Hard/garfiled_halfcompleted_report.md"
+  ]
+}

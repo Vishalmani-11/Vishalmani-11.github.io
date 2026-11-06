@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#13111f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css">
+<title>Writeup | Vishal M Portfolio</title>
+</head>
+<body class="writeup-page">
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<div class="scan" aria-hidden="true"></div>
+
+<aside class="side" aria-label="Main navigation">
+  <a class="logo" href="index.html"><span class="mk" aria-hidden="true">V</span><span>Vishal M</span></a>
+  <nav class="grp">
+    <a class="item" href="index.html#top" aria-label="Home"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Home</span></a>
+    <a class="item" href="projects.html" aria-label="Projects"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>Projects</span></a>
+    <a class="item on" href="writeups.html" aria-label="Writeups"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg><span>Writeups</span></a>
+    <a class="item" href="index.html#contact" aria-label="Contact"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Contact</span></a>
+  </nav>
+  <div class="grp foot-s"></div>
+</aside>
+
+<div class="topr" role="group" aria-label="External links">
+  <a class="btn" href="https://github.com/vishalmani-11" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <a class="btn s" href="index.html#contact">Hire me</a>
+</div>
+
+<main class="main" id="main-content">
+  <div class="w">
+    <div class="writeup-header">
+      <nav class="writeup-nav" aria-label="Writeup navigation">
+        <a class="back-btn" href="writeups.html">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
+          All writeups
+        </a>
+        <div></div>
+      </nav>
+      
+      <div class="writeup-meta" id="writeup-meta">
+        <span id="writeup-date"></span>
+        <span id="writeup-category"></span>
+        <span id="writeup-platform"></span>
+        <span class="diff" id="writeup-difficulty"></span>
+        <span id="writeup-reading-time"></span>
+      </div>
+      
+      <h1 id="writeup-title">Loading...</h1>
+    </div>
+    
+    <article class="writeup-content" id="writeup-content">
+      <div class="loading">Loading writeup...</div>
+    </article>
+    
+    <footer class="writeup-footer" id="writeup-footer">
+      <a href="writeups.html" class="btn">Back to writeups</a>
+      <div>
+        <a id="prev-writeup" class="btn">Previous</a>
+        <a id="next-writeup" class="btn">Next</a>
+      </div>
+    </footer>
+  </div>
+</main>
+
+<footer><div class="w"><div class="fg">
+  <div><b style="color:var(--hi)">Vishal M</b><p id="footer-tagline">Cybersecurity Engineer | Ethical Hacker</p></div>
+  <div><h4>Portfolio</h4><a href="index.html">Home</a><a href="projects.html">Projects</a><a href="writeups.html">Writeups</a></div>
+  <div><h4>Connect</h4><a href="https://github.com/vishalmani-11" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+</div>
+<div class="fb"><span>&copy; 2026 Vishal M</span></div></div></footer>
+
+<script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+<script>
+// Helper function for creating elements (same as in main.js)
+const create = (tag, attrs = {}, ...children) => {
+  const el = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  el.append(...children.flat());
+  return el;
+};
+
+let allWriteups = [];
+let currentIndex = -1;
+
+async function initWriteupPage() {
+  await window.loadAllData();
+  allWriteups = window.writeupsData || [];
+  const urlParams = new URLSearchParams(window.location.search);
+  const slug = urlParams.get('slug');
+  
+  if (!slug) {
+    document.getElementById('writeup-content').replaceChildren(
+      create('div', { class: 'error-message' }, 'No writeup specified. Please provide a slug.')
+    );
+    return;
+  }
+  
+  const writeup = allWriteups.find(w => w.slug === slug);
+  if (!writeup) {
+    document.getElementById('writeup-content').replaceChildren(
+      create('div', { class: 'error-message' }, 'Writeup not found.')
+    );
+    return;
+  }
+  
+  currentIndex = allWriteups.findIndex(w => w.slug === slug);
+  await loadAndRenderWriteup(writeup, slug);
+}
+
+async function loadAndRenderWriteup(writeup, slug) {
+  const localUrl = `writeups/${slug}.md`;
+  const externalBase = 'https://raw.githubusercontent.com/Vishalmani-11/HTB-Writeups/main/';
+  const externalUrl = writeup?.source ? `${externalBase}${writeup.source.replace(/\\/g, '/')}` : null;
+
+  try {
+    let markdown = null;
+    const localResponse = await fetch(localUrl);
+    if (localResponse.ok) {
+      markdown = await localResponse.text();
+    }
+
+    if (!markdown && externalUrl) {
+      const externalResponse = await fetch(externalUrl);
+      if (!externalResponse.ok) throw new Error('External source not found');
+      markdown = await externalResponse.text();
+    }
+
+    if (!markdown) throw new Error('Writeup file not found');
+    renderWriteup(writeup, markdown);
+  } catch (error) {
+    console.error('Error loading writeup:', error);
+    document.getElementById('writeup-content').replaceChildren(
+      create('div', { class: 'error-message' }, 'Failed to load writeup content.')
+    );
+  }
+}
+
+function parseFrontMatter(markdown) {
+  const match = markdown.match(/^---\s*\n(.*?)\n---/s);
+  if (!match) return { frontMatter: {}, body: markdown };
+  const frontMatter = {};
+  const lines = match[1].split('\n');
+  lines.forEach(line => {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex > 0) {
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      frontMatter[key] = value;
+    }
+  });
+  let body = markdown.substring(match[0].length).trim();
+  body = body.replace(/^#\s+.*\n/, '');
+  return { frontMatter, body };
+}
+
+function calculateReadingTime(text) {
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+
+function renderWriteup(writeup, markdown) {
+  const { frontMatter, body } = parseFrontMatter(markdown);
+  const dateEl = document.getElementById('writeup-date');
+  const categoryEl = document.getElementById('writeup-category');
+  const platformEl = document.getElementById('writeup-platform');
+  const difficultyEl = document.getElementById('writeup-difficulty');
+  const titleEl = document.getElementById('writeup-title');
+  const readingTimeEl = document.getElementById('writeup-reading-time');
+  
+  if (dateEl) {
+    const date = new Date(frontMatter.date || writeup.date || '');
+    dateEl.textContent = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  
+  if (categoryEl && (frontMatter.category || writeup.category)) {
+    categoryEl.textContent = `Category: ${frontMatter.category || writeup.category}`;
+  }
+  
+  if (platformEl && (frontMatter.platform || writeup.platform)) {
+    platformEl.textContent = `Platform: ${frontMatter.platform || writeup.platform}`;
+  }
+  
+  if (difficultyEl) {
+    const difficulty = parseInt(frontMatter.difficulty || writeup.difficulty || 1);
+    difficultyEl.replaceChildren(difficultyBars(difficulty));
+  }
+  
+  if (titleEl) {
+    titleEl.textContent = frontMatter.title || writeup.title || 'Untitled';
+  }
+  
+  if (readingTimeEl) {
+    readingTimeEl.textContent = calculateReadingTime(body);
+  }
+  
+  const content = document.getElementById('writeup-content');
+  if (content) {
+    marked.setOptions({ breaks: true, gfm: true });
+    const html = marked.parse(body);
+    const cleanHtml = DOMPurify.sanitize(html, { ALLOWED_TAGS: ['p','br','b','i','em','strong','a','code','pre','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','hr','table','thead','tbody','tr','th','td','span','div'] });
+    content.innerHTML = cleanHtml;
+    setTimeout(() => {
+      document.querySelectorAll('pre code').forEach(el => {
+        const pre = el.parentElement;
+        if (pre && pre.tagName === 'PRE') {
+          const btn = create('button', { class: 'copy-btn' }, 'Copy');
+          btn.onclick = () => {
+            navigator.clipboard.writeText(el.textContent);
+            btn.classList.add('copied');
+            setTimeout(() => btn.classList.remove('copied'), 2000);
+          };
+          pre.appendChild(btn);
+        }
+      });
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+    }, 100);
+  }
+  updateWriteupNav();
+}
+
+function updateWriteupNav() {
+  const prevBtn = document.getElementById('prev-writeup');
+  const nextBtn = document.getElementById('next-writeup');
+  if (prevBtn) {
+    if (currentIndex > 0) {
+      const prev = allWriteups[currentIndex - 1];
+      prevBtn.href = `writeup.html?slug=${prev.slug}`;
+      prevBtn.style.opacity = '1';
+      prevBtn.style.cursor = 'pointer';
+    } else {
+      prevBtn.href = '#';
+      prevBtn.style.opacity = '0.5';
+      prevBtn.style.cursor = 'not-allowed';
+    }
+  }
+  if (nextBtn) {
+    if (currentIndex < allWriteups.length - 1) {
+      const next = allWriteups[currentIndex + 1];
+      nextBtn.href = `writeup.html?slug=${next.slug}`;
+      nextBtn.style.opacity = '1';
+      nextBtn.style.cursor = 'pointer';
+    } else {
+      nextBtn.href = '#';
+      nextBtn.style.opacity = '0.5';
+      nextBtn.style.cursor = 'not-allowed';
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWriteupPage);
+} else {
+  initWriteupPage();
+}
+</script>
+</body>
+</html>
