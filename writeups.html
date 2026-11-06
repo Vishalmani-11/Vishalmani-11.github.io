@@ -81,6 +81,14 @@ let displayedCount = 10;
 let currentCategory = '';
 let currentDifficulty = '';
 
+function normalizeCategory(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  const lowered = text.toLowerCase();
+  if (lowered === 'fortress' || lowered === 'fortresses') return 'Fortress';
+  return text.replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
 async function initWriteupsPage() {
   await window.loadAllData();
   allWriteups = window.writeupsData || [];
@@ -94,7 +102,8 @@ async function initWriteupsPage() {
 function setCategory(cat) {
   currentCategory = cat;
   document.querySelectorAll('#category-filters .filter-chip').forEach(el => {
-    el.classList.toggle('active', el.textContent.includes(cat) || (cat === '' && el.textContent === 'All categories'));
+    const isActive = (cat === '' && el.textContent.trim() === 'All categories') || normalizeCategory(el.textContent) === normalizeCategory(cat);
+    el.classList.toggle('active', isActive);
   });
   filterWriteups();
 }
@@ -102,7 +111,8 @@ function setCategory(cat) {
 function setDifficulty(diff) {
   currentDifficulty = diff;
   document.querySelectorAll('#difficulty-filters .filter-chip').forEach(el => {
-    el.classList.toggle('active', el.textContent.includes(currentDifficulty) || (diff === '' && el.textContent === 'All difficulties'));
+    const isActive = (diff === '' && el.textContent.trim() === 'All difficulties') || el.textContent.trim() === ({ '1': 'Easy', '2': 'Medium', '3': 'Hard', '4': 'Insane' }[diff] || '');
+    el.classList.toggle('active', isActive);
   });
   filterWriteups();
 }
@@ -111,7 +121,15 @@ function renderCategoryFilters() {
   const container = document.getElementById('category-filters');
   if (!container) return;
   
-  const categories = [...new Set(allWriteups.map(w => w.category).filter(Boolean))];
+  const categoryOrder = ['Easy', 'Medium', 'Hard', 'Insane', 'Fortress'];
+  const categories = [...new Set(allWriteups.map(w => normalizeCategory(w.category)).filter(Boolean))]
+    .sort((a, b) => {
+      const ia = categoryOrder.indexOf(a);
+      const ib = categoryOrder.indexOf(b);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      return a.localeCompare(b);
+    });
+
   container.replaceChildren(
     create('span', { class: 'filter-chip active', onclick: 'setCategory("")' }, 'All categories'),
     ...categories.map(cat => create('span', { class: 'filter-chip', onclick: `setCategory('${cat}')` }, cat))
@@ -124,13 +142,13 @@ function filterWriteups() {
   filteredWriteups = allWriteups.filter(w => {
     const title = (w.title || '').toLowerCase();
     const summary = (w.summary || '').toLowerCase();
-    const category = (w.category || '').toLowerCase();
+    const category = normalizeCategory(w.category || '').toLowerCase();
     const platform = (w.platform || '').toLowerCase();
     const tags = (w.tags || []).join(' ').toLowerCase();
     const date = (w.date || '').toLowerCase();
     
-    const matchesSearch = !searchTerm || title.includes(searchTerm) || summary.includes(searchTerm) || category.includes(searchTerm) || platform.includes(searchTerm) || tags.includes(searchTerm);
-    const matchesCategory = !currentCategory || category === currentCategory.toLowerCase();
+    const matchesSearch = !searchTerm || title.includes(searchTerm) || summary.includes(searchTerm) || category.includes(searchTerm) || platform.includes(searchTerm) || tags.includes(searchTerm) || date.includes(searchTerm);
+    const matchesCategory = !currentCategory || category === normalizeCategory(currentCategory).toLowerCase();
     const matchesDifficulty = !currentDifficulty || String(w.difficulty || 1) === currentDifficulty;
     
     return matchesSearch && matchesCategory && matchesDifficulty;
@@ -162,6 +180,7 @@ function renderWriteups() {
     const date = w.date ? new Date(w.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown';
     const isSample = w.sample;
     const title = isSample ? create('span', {}, [w.title || 'Untitled', create('span', { class: 'sample-badge' }, 'Sample')]) : w.title || 'Untitled';
+    const category = normalizeCategory(w.category || 'Uncategorized');
     
     return create('a', { 
       class: 'row',
@@ -172,7 +191,7 @@ function renderWriteups() {
         create('b', {}, title),
         create('small', {}, w.summary || '')
       ]),
-      create('span', { class: 'c' }, w.platform || w.category || 'Uncategorized'),
+      create('span', { class: 'c' }, category),
       difficultyBars(w.difficulty || 1)
     ]);
   }));
