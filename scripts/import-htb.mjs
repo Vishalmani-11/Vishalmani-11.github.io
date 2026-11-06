@@ -23,6 +23,13 @@ const RAW_FALLBACK = 'https://raw.githubusercontent.com/vishalmani-11/HTB-Writeu
 const MARK = 'generated: htb-import';
 const LEVELS = { easy: 1, medium: 2, hard: 3, insane: 4, fortresses: 3 };
 const LEVEL_NAMES = ['', 'Easy', 'Medium', 'Hard', 'Insane'];
+const CATEGORY_BY_LEVEL = {
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+  insane: 'Insane',
+  fortresses: 'Fortress',
+};
 const GENERIC = /^(readme|index|writeup|writeups|report|notes?)$/i;
 
 function git(args) {
@@ -65,7 +72,7 @@ function parseFrontMatter(text) {
   const meta = {};
   for (const line of m[1].split('\n')) {
     const i = line.indexOf(':');
-    if (i > 0) meta[line.slice(0, i).trim().toLowerCase()] = line.slice(i + 1).trim().replace(/^["']|["']$/g, '');
+    if (i > 0) meta[line.slice(0, i).trim().toLowerCase()] = line.slice(i + 1).trim().replace(/^['"]|['"]$/g, '');
   }
   return { meta, body: text.slice(m[0].length) };
 }
@@ -174,6 +181,7 @@ function main() {
     const folders = parts.slice(0, -1);
     const levelKey = (folders[0] || '').toLowerCase();
     const difficulty = LEVELS[levelKey] || 2;
+    const category = CATEGORY_BY_LEVEL[levelKey] || 'Machine';
     const isFortress = levelKey === 'fortresses';
     const subFolder = folders.length > 1 ? folders[folders.length - 1] : '';
 
@@ -215,7 +223,7 @@ function main() {
       '---',
       `title: ${title}`,
       `date: ${meta.date || firstCommitDate(fileRel)}`,
-      `category: ${meta.category || (isFortress ? 'Fortress' : 'Machine')}`,
+      `category: ${meta.category || category}`,
       `platform: ${meta.platform || 'HackTheBox'}`,
       `difficulty: ${difficulty}`,
       `tags: [${(meta.tags ? meta.tags.replace(/^\[|\]$/g, '').split(',').map((t) => t.trim()).filter(Boolean) : tags).join(', ')}]`,
