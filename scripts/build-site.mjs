@@ -9,7 +9,7 @@ import { dirname } from 'node:path';
 const ROOT = process.cwd();
 const WRITEUPS_DIR = `${ROOT}/writeups`;
 const DATA_DIR = `${ROOT}/data`;
-const SITE_URL = 'https://VishalM.github.io';
+const SITE_URL = 'https://Vishalmani-11.github.io';
 
 async function main() {
   try {
