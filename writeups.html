@@ -74,13 +74,7 @@
 
 <script src="main.js"></script>
 <script>
-// Helper function for creating elements (same as in main.js)
-const create = (tag, attrs = {}, ...children) => {
-  const el = document.createElement(tag);
-  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
-  el.append(...children.flat());
-  return el;
-};
+// create() comes from main.js - do not redeclare it here
 
 // Writeups page specific logic
 let allWriteups = [];
@@ -196,8 +190,7 @@ function renderWriteups() {
     }, [
       create('span', { class: 'd' }, date),
       create('div', {}, [
-        create('b', {}, title),
-        create('small', {}, w.summary || '')
+        create('b', {}, title)
       ]),
       create('span', { class: 'c' }, category),
       difficultyBars(w.difficulty || 1)
