@@ -254,9 +254,10 @@ main.main:has(#all-projects) .sh h1, main.main:has(#all-writeups) .sh h1 { font-
 .writeup-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--ln); }
 .writeup-meta { color: var(--mu); font-size: .88rem; }.writeup-meta span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--ln); }.writeup-meta .diff { display: inline-flex; align-items: center; gap: 8px; }
 #writeup-title { margin-bottom: 24px; overflow-wrap: anywhere; }
+.writeup-page #writeup-title { max-width: none; font-size: clamp(1.9rem, 3.4vw, 2.6rem); line-height: 1.15; letter-spacing: -.03em; }
 .writeup-content { padding: clamp(22px, 4vw, 38px); border: 1px solid rgba(201, 184, 255, .13); border-radius: 14px; background: rgba(25, 23, 37, .84); box-shadow: 0 12px 32px rgba(0, 0, 0, .12); line-height: 1.8; overflow-wrap: anywhere; }
 .writeup-content h1, .writeup-content h2, .writeup-content h3, .writeup-content h4, .writeup-content h5, .writeup-content h6 { margin: 1.5em 0 .5em; color: var(--hi); overflow-wrap: anywhere; }
-.writeup-content h1 { font-size: 2rem; }.writeup-content h2 { font-size: 1.6rem; }.writeup-content h3 { font-size: 1.35rem; }
+.writeup-content h1 { max-width: none; font-size: 2rem; }.writeup-content h2 { font-size: 1.6rem; }.writeup-content h3 { font-size: 1.35rem; }
 .writeup-content p { margin: 1em 0; color: var(--fg); line-height: 1.8; }.writeup-content a { color: var(--g); text-decoration: underline; overflow-wrap: anywhere; }.writeup-content a:hover { color: var(--r); }
 .writeup-content pre { position: relative; margin: 1em 0; padding: 16px; overflow: auto; border: 1px solid rgba(201, 184, 255, .15); border-radius: 10px; background: color-mix(in srgb, var(--bg) 96%, var(--pn)); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
 .writeup-content code { font-family: var(--mono); font-size: .9rem; overflow-wrap: anywhere; word-break: break-word; }
