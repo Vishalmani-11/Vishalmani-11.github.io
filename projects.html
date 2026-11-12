@@ -54,7 +54,7 @@
       <span class="filter-chip active" onclick="setTag('')">All tags</span>
     </div>
 
-    <div class="projects-grid" id="all-projects">
+    <div class="cases" id="all-projects">
       <div class="loading">Loading projects...</div>
     </div>
   </div>
@@ -69,13 +69,7 @@
 
 <script src="main.js"></script>
 <script>
-// Helper function for creating elements (same as in main.js)
-const create = (tag, attrs = {}, ...children) => {
-  const el = document.createElement(tag);
-  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
-  el.append(...children.flat());
-  return el;
-};
+// create() and difficultyBars() come from main.js - do not redeclare them here
 
 // Projects page specific logic
 let allProjects = [];
@@ -170,7 +164,7 @@ function filterAndSortProjects() {
   });
   
   sortProjects();
-  renderProjects();
+  renderProjectRows();
 }
 
 function sortProjects() {
@@ -191,10 +185,10 @@ function sortProjects() {
   }
 }
 
-function renderProjects() {
+function renderProjectRows() {
   const container = document.getElementById('all-projects');
   if (!container) return;
-  
+
   if (filteredProjects.length === 0) {
     container.replaceChildren(create('div', { class: 'empty-state' }, [
       create('h3', {}, 'No projects found'),
@@ -202,32 +196,29 @@ function renderProjects() {
     ]));
     return;
   }
-  
-  container.replaceChildren(...filteredProjects.map((p, i) => {
-    const isSample = p.sample;
-    const title = isSample ? create('span', {}, [p.title || p.repo || p.name || 'Untitled', create('span', { class: 'sample-badge' }, 'Sample')]) : p.title || p.repo || p.name || 'Untitled';
-    const ghData = window.githubData?.repos?.find(r => r.name === (p.repo || p.name));
+
+  container.replaceChildren(...filteredProjects.map(p => {
+    const name = p.repo || p.name;
+    const ghData = window.githubData?.repos?.find(r => r.name === name);
     const merged = { ...p, ...ghData };
-    
-    return create('div', { class: 'card' }, [
-      create('div', { class: 'ct' }, [
-        create('span', { class: 'n' }, String(i + 1).padStart(2, '0')),
-        create('span', { class: `live ${merged.status === 'Live' ? '' : 'soon'}` }, [
-          create('i', { class: 'led' }),
-          merged.status || 'Live'
-        ])
+    const date = merged.pushed_at
+      ? new Date(merged.pushed_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      : 'Updating soon';
+    const title = merged.title || name || 'Untitled';
+
+    return create('a', {
+      class: 'row',
+      href: repoReadmeUrl(name) || '#',
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    }, [
+      create('span', { class: 'd' }, date),
+      create('div', {}, [
+        create('b', {}, title),
+        create('small', {}, merged.summary || merged.description || '')
       ]),
-      create('h3', {}, title),
-      create('p', {}, merged.summary || merged.description || 'No description'),
-      create('div', { class: 'tags' }, [
-        ...(merged.tags || []).map(tag => create('i', {}, tag)),
-        merged.language ? create('i', {}, merged.language) : null
-      ].filter(Boolean)),
-      create('div', { class: 'stt' }, [
-        merged.difficulty ? difficultyBars(merged.difficulty) : null,
-        create('span', {}, `${merged.stargazers_count || 0} stars`),
-        create('span', {}, new Date(merged.pushed_at || 0).toLocaleDateString())
-      ].filter(Boolean))
+      create('span', { class: 'c' }, merged.language || (merged.tags || [])[0] || 'Project'),
+      difficultyBars(merged.difficulty || 1)
     ]);
   }));
 }
