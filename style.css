@@ -396,3 +396,5 @@ footer { margin-top: 72px; padding: 34px 0 80px; border-top: 1px solid rgba(201,
   html { scroll-behavior: auto; }.tl, .ty, .cur, .loading::after { animation: none; opacity: 1; }.ty { width: auto; }
   .item:hover, .btn:hover, .card:hover, .repo-item:hover, .row:hover { transform: none; }
 }
+
+.btn.disabled { opacity: .55; cursor: not-allowed; pointer-events: none; }
