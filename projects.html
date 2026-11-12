@@ -138,7 +138,7 @@ function renderProjectsFilters() {
   }
   
   if (tagFilters) {
-    const tags = [...new Set(allProjects.flatMap(p => p.tags || []).filter(Boolean))];
+    const tags = [...new Set(allProjects.flatMap(p => p.tags || p.topics || []).filter(Boolean))];
     tagFilters.replaceChildren(
       create('span', { class: 'filter-chip active', onclick: 'setTag("")' }, 'All tags'),
       ...tags.map(tag => create('span', { class: 'filter-chip', onclick: `setTag('${tag}')` }, tag))
@@ -153,7 +153,7 @@ function filterAndSortProjects() {
     const name = (p.repo || p.name || '').toLowerCase();
     const title = (p.title || '').toLowerCase();
     const summary = (p.summary || p.description || '').toLowerCase();
-    const tags = (p.tags || []).join(' ').toLowerCase();
+    const tags = (p.tags || p.topics || []).join(' ').toLowerCase();
     const language = (p.language || '').toLowerCase();
     
     const matchesSearch = !searchTerm || name.includes(searchTerm) || title.includes(searchTerm) || summary.includes(searchTerm) || tags.includes(searchTerm);
