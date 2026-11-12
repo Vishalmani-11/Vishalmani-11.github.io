@@ -339,8 +339,17 @@ function renderContact() {
     linkedinBtn.textContent = 'LinkedIn';
   }
 
-  if (resumeBtn && profileData?.resume) {
-    resumeBtn.href = profileData.resume;
+  if (resumeBtn) {
+    if (profileData?.resume) {
+      resumeBtn.href = profileData.resume;
+      resumeBtn.textContent = 'Resume';
+    } else {
+      resumeBtn.removeAttribute('href');
+      resumeBtn.removeAttribute('target');
+      resumeBtn.setAttribute('aria-disabled', 'true');
+      resumeBtn.classList.add('disabled');
+      resumeBtn.textContent = 'Resume (coming soon)';
+    }
     resumeBtn.hidden = false;
   }
 
