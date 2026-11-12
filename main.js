@@ -65,7 +65,26 @@ async function loadAllData() {
   // build-site.mjs writes { data: [...] }. Accept that or a plain list.
   writeupsData = Array.isArray(w) ? w : (w?.data || []);
   // The inner pages (projects, writeups, writeup) read their data from window.
+  await ensureGithubRepos();
   Object.assign(window, { profileData, projectsData, writeupsData, achievementsData, githubData });
+}
+
+// If data/github.json is empty (the deploy fetch failed, or you are previewing locally),
+// load the public repos straight from the GitHub API in the visitor's browser.
+async function ensureGithubRepos() {
+  if (githubData?.repos?.length) return;
+  try {
+    const owner = (profileData?.github || 'https://github.com/vishalmani-11').replace(/\/+$/, '').split('/').pop();
+    const res = await fetch(`https://api.github.com/users/${owner}/repos?per_page=100&sort=pushed&type=owner`, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!res.ok) return;
+    const list = await res.json();
+    const repos = list.filter(r => !r.fork && !r.archived && r.name.toLowerCase() !== `${owner.toLowerCase()}.github.io`);
+    githubData = { ...(githubData || {}), repos };
+  } catch (e) {
+    console.warn('GitHub fallback failed:', e.message);
+  }
 }
 
 // Link to a repo's README on GitHub. Works for any repo name and any capitalisation.
@@ -172,7 +191,11 @@ function renderProjects() {
   }
 
   const featuredProjects = projectsData.filter(p => p.featured);
-  const otherRepos = projectsData.filter(p => !p.featured);
+  const known = new Set(projectsData.map(p => String(p.repo || '').toLowerCase()));
+  const autoRepos = (githubData?.repos || [])
+    .filter(r => !known.has(r.name.toLowerCase()))
+    .map(r => ({ repo: r.name, title: r.name, summary: r.description || '' }));
+  const otherRepos = [...projectsData.filter(p => !p.featured), ...autoRepos];
 
   // Render featured projects
   featured.replaceChildren(...featuredProjects.map((p, i) => {
