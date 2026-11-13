@@ -191,11 +191,7 @@ function renderProjects() {
   }
 
   const featuredProjects = projectsData.filter(p => p.featured);
-  const known = new Set(projectsData.map(p => String(p.repo || '').toLowerCase()));
-  const autoRepos = (githubData?.repos || [])
-    .filter(r => !known.has(r.name.toLowerCase()))
-    .map(r => ({ repo: r.name, title: r.name, summary: r.description || '' }));
-  const otherRepos = [...projectsData.filter(p => !p.featured), ...autoRepos];
+  const otherRepos = projectsData.filter(p => !p.featured);
 
   // Render featured projects
   featured.replaceChildren(...featuredProjects.map((p, i) => {
