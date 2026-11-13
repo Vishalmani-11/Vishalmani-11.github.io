@@ -1,6 +1,67 @@
 [
+
   {
-    "repo": "portfolio",
+    "repo": "GHOST",
+    "title": "GHOST",
+    "summary": "Make your Linux machine invisible on any network.",
+    "difficulty": 3,
+    "status": "Live",
+    "featured": true,
+    "tags": ["Python", "Linux", "Networking"],
+    "sample": false
+  },
+  {
+    "repo": "passbuild-",
+    "title": "PassBuild",
+    "summary": "A terminal-based Python tool to generate, check, and munge passwords, built for security enthusiasts.",
+    "difficulty": 2,
+    "status": "Live",
+    "featured": true,
+    "tags": ["Python", "Passwords", "CLI"],
+    "sample": false
+  },
+  {
+    "repo": "auto-config-firewall",
+    "title": "Auto Config Firewall",
+    "summary": "Automation tool for UFW and iptables firewall configuration on Linux.",
+    "difficulty": 2,
+    "status": "Live",
+    "featured": true,
+    "tags": ["Python", "Linux", "Firewall"],
+    "sample": false
+  },
+  {
+    "repo": "Malware-Scanner-GUI",
+    "title": "Malware Scanner GUI",
+    "summary": "A graphical malware scanner for checking files for threats.",
+    "difficulty": 3,
+    "status": "Live",
+    "featured": true,
+    "tags": ["Malware", "GUI", "Security"],
+    "sample": false
+  },
+  {
+    "repo": "RedOps",
+    "title": "RedOps",
+    "summary": "Red team operations toolkit and notes.",
+    "difficulty": 3,
+    "status": "Live",
+    "featured": true,
+    "tags": ["Red Teaming", "Security"],
+    "sample": false
+  },
+  {
+    "repo": "OSINT_NEXUS",
+    "title": "OSINT Nexus",
+    "summary": "An OSINT project for gathering and organising open-source intelligence.",
+    "difficulty": 2,
+    "status": "Live",
+    "featured": true,
+    "tags": ["OSINT", "Security"],
+    "sample": false
+  },
+    {
+    "repo": "Vishalmani-11.github.io",
     "title": "Personal Portfolio",
     "summary": "A static, data-driven portfolio built with vanilla HTML, CSS, and JavaScript.",
     "difficulty": 3,
