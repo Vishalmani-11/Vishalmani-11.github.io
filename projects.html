@@ -80,18 +80,15 @@ let currentTag = '';
 
 async function initProjectsPage() {
   await window.loadAllData();
-  allProjects = [...(window.projectsData || []), ...(window.githubData?.repos || [])];
-  
-  // Deduplicate by repo name
-  const seen = new Map();
-  allProjects.forEach(p => {
-    const key = p.repo || p.name;
-    if (key && !seen.has(key)) {
-      seen.set(key, p);
-    }
-  });
-  allProjects = Array.from(seen.values());
-  
+  const ghRepos = window.githubData?.repos || [];
+  // Only the projects listed in data/projects.json. GitHub data (dates, language, stars) is merged in when available.
+  allProjects = (window.projectsData || [])
+    .filter(p => !p.sample)
+    .map(p => {
+      const gh = ghRepos.find(r => r.name.toLowerCase() === String(p.repo || '').toLowerCase());
+      return { ...gh, ...p };
+    });
+
   renderProjectsFilters();
   filterAndSortProjects();
   
@@ -131,6 +128,7 @@ function renderProjectsFilters() {
   
   if (langFilters) {
     const languages = [...new Set(allProjects.map(p => p.language).filter(Boolean))];
+    langFilters.hidden = languages.length === 0;
     langFilters.replaceChildren(
       create('span', { class: 'filter-chip active', onclick: 'setLanguage("")' }, 'All languages'),
       ...languages.map(lang => create('span', { class: 'filter-chip', onclick: `setLanguage('${lang}')` }, lang))
@@ -167,10 +165,14 @@ function filterAndSortProjects() {
   renderProjectRows();
 }
 
+function projectDate(p) {
+  return p.pushed_at || p.updated || null;
+}
+
 function sortProjects() {
   switch (currentSort) {
     case 'updated':
-      filteredProjects.sort((a, b) => new Date(b.pushed_at || 0) - new Date(a.pushed_at || 0));
+      filteredProjects.sort((a, b) => new Date(projectDate(b) || 0) - new Date(projectDate(a) || 0));
       break;
     case 'stars':
       filteredProjects.sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
@@ -180,7 +182,7 @@ function sortProjects() {
       filteredProjects.sort((a, b) => {
         if (a.featured && !b.featured) return -1;
         if (!a.featured && b.featured) return 1;
-        return new Date(b.pushed_at || 0) - new Date(a.pushed_at || 0);
+        return new Date(projectDate(b) || 0) - new Date(projectDate(a) || 0);
       });
   }
 }
@@ -199,10 +201,10 @@ function renderProjectRows() {
 
   container.replaceChildren(...filteredProjects.map(p => {
     const name = p.repo || p.name;
-    const ghData = window.githubData?.repos?.find(r => r.name === name);
-    const merged = { ...p, ...ghData };
-    const date = merged.pushed_at
-      ? new Date(merged.pushed_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    const merged = p;
+    const when = projectDate(merged);
+    const date = when
+      ? new Date(when).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })
       : 'Updating soon';
     const title = merged.title || name || 'Untitled';
 
