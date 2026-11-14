@@ -178,9 +178,11 @@ function renderWriteup(writeup, markdown) {
     difficultyEl.replaceChildren(difficultyBars(difficulty));
   }
   
+  const resolvedTitle = (frontMatter.title || writeup?.title || 'Untitled').trim();
   if (titleEl) {
-    titleEl.textContent = frontMatter.title || writeup.title || 'Untitled';
+    titleEl.textContent = resolvedTitle;
   }
+  document.title = `${resolvedTitle} | Vishal M Portfolio`;
   
   if (readingTimeEl) {
     readingTimeEl.textContent = calculateReadingTime(body);
@@ -190,7 +192,7 @@ function renderWriteup(writeup, markdown) {
   if (content) {
     marked.setOptions({ breaks: true, gfm: true });
     const html = marked.parse(body);
-    const cleanHtml = DOMPurify.sanitize(html, { ALLOWED_TAGS: ['p','br','b','i','em','strong','a','code','pre','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','hr','table','thead','tbody','tr','th','td','span','div'] });
+    const cleanHtml = DOMPurify.sanitize(html, { ALLOWED_TAGS: ['p','br','b','i','em','strong','a','code','pre','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','hr','table','thead','tbody','tr','th','td','span','div','details','summary'] });
     content.innerHTML = cleanHtml;
     setTimeout(() => {
       document.querySelectorAll('pre code').forEach(el => {
