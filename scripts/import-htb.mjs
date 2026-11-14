@@ -66,6 +66,15 @@ function cleanName(file) {
   return titleCase(cleaned || base.replace(/[_\-]+/g, ' '));
 }
 
+// Headings like "Hosts entry" or "HTB Simple Personal Report - Logging" are not machine names.
+const BAD_HEADING = /^(hosts?(\s+file)?(\s+entry)?|\/etc\/hosts|notes?|summary|overview|introduction|recon(naissance)?|enumeration|walkthrough|writeups?|reports?|htb simple personal report)$/i;
+function niceHeading(text) {
+  if (!text) return '';
+  const m = text.match(/^(?:htb\s+)?(?:simple\s+)?(?:personal\s+)?(?:report|write-?up)\s*[\u2014\u2013:-]\s*(.+)$/i);
+  const t = m ? m[1].trim() : text.trim();
+  return BAD_HEADING.test(t) ? '' : t;
+}
+
 function parseFrontMatter(text) {
   const m = text.match(/^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/);
   if (!m) return { meta: {}, body: text };
@@ -164,8 +173,12 @@ function main() {
   }
 
   let exclude = [];
-  try { exclude = (JSON.parse(readFileSync(CONFIG, 'utf8')).exclude || []).map((p) => toPosix(p).toLowerCase()); }
-  catch { console.warn('import-htb: data/htb-publish.json not readable, nothing is excluded.'); }
+  const titles = {};
+  try {
+    const cfg = JSON.parse(readFileSync(CONFIG, 'utf8'));
+    exclude = (cfg.exclude || []).map((p) => toPosix(p).toLowerCase());
+    for (const [p, t] of Object.entries(cfg.titles || {})) titles[toPosix(p).toLowerCase()] = String(t);
+  } catch { console.warn('import-htb: data/htb-publish.json not readable, nothing is excluded.'); }
 
   const branch = defaultBranch();
   const used = new Set();
@@ -194,7 +207,7 @@ function main() {
     const raw = readFileSync(abs, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
     const { meta, body: rawBody } = parseFrontMatter(raw);
     const h1 = rawBody.match(/^#[ \t]+(.+)$/m);
-    const title = redact(oneLine(meta.title || (h1 ? stripMd(h1[1]) : '') || display));
+    const title = redact(oneLine(titles[fileRel.toLowerCase()] || meta.title || niceHeading(h1 ? stripMd(h1[1]) : '') || display));
 
     let slug = 'htb-' + kebab(display);
     if (used.has(slug) || existsSync(join(OUT, slug + '.md'))) {
