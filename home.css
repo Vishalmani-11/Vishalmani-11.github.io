@@ -85,3 +85,18 @@ footer{border-top-color:rgba(185,151,255,.2);color:#c9b8f0}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 
 .ib{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;padding:0;border-radius:16px;margin:0 4px}.ib svg{width:24px;height:24px}
+
+/* Polish: desktop spacing + mobile fixes */
+.hero h1{font-size:clamp(2.4rem,4.2vw,3.9rem)}
+.hero .w{padding-bottom:120px}
+.orbit{left:-15%;width:130%;margin-top:-65%}
+
+@media(max-width:800px){
+  .links{display:flex;order:3;width:100%;gap:20px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:10px}
+  .links a{white-space:nowrap}
+  .hero .w{padding-bottom:90px}
+}
+@media(max-width:600px){
+  .orbit{position:static;width:auto;aspect-ratio:auto;margin:18px 0 0;left:auto;top:auto;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:none}
+  .orbit .bd{position:static;transform:none;animation:none}
+}
