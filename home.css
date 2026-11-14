@@ -100,3 +100,19 @@ footer{border-top-color:rgba(185,151,255,.2);color:#c9b8f0}
   .orbit{position:static;width:auto;aspect-ratio:auto;margin:18px 0 0;left:auto;top:auto;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:none}
   .orbit .bd{position:static;transform:none;animation:none}
 }
+
+/* Hero buttons: spacing on desktop, equal full-width stack on phones */
+.hero .w>div:first-child .btn{margin:0 12px 12px 0}
+.btn[hidden]{display:none}
+@media(max-width:600px){
+  .hero .w>div:first-child .btn{display:block;width:100%;margin:0 0 12px;text-align:center}
+}
+
+/* Navbar spacing: stop "Hire me" touching the top edge */
+.nav .w{padding-top:12px;padding-bottom:4px}
+.nav .btn.p{padding:11px 22px;min-height:0}
+@media(max-width:800px){
+  .nav .w{row-gap:6px}
+  .links{padding-bottom:12px}
+}
+
