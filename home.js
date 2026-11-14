@@ -21,7 +21,7 @@ const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.classN
       a.href = p.demo || ('https://github.com/vishalmani-11/' + p.repo);
       a.target = '_blank'; a.rel = 'noopener noreferrer';
       const t = el('div', 't');
-      t.style.background = `linear-gradient(135deg, hsl(${(i * 47 + 260) % 360} 45% 34%), hsl(${(i * 47 + 310) % 360} 45% 14%))`;
+      t.style.background = `linear-gradient(135deg, hsl(${250 + (i * 17) % 50} 50% 36%), hsl(${280 + (i * 17) % 40} 50% 16%))`;
       t.append(el('b', '', (p.title || '?').trim().slice(0, 2)), el('i', '', (p.tags && p.tags[0]) || 'Project'));
       const b = el('div', 'b');
       b.append(el('h3', '', p.title || 'Untitled'), el('p', '', p.summary || ''));
