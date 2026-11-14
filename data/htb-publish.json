@@ -1,0 +1,10 @@
+{
+  "_note": "Paths listed in exclude are NOT published. Files shorter than minLength characters (short notes like a hosts entry) are skipped automatically.",
+  "exclude": [
+    "HackTheBox/Hard/garfiled_halfcompleted_report.md"
+  ],
+  "titles": {
+    "HackTheBox/Medium/THE_FILE_NAME.md": "Proper Machine Name"
+  },
+  "minLength": 3000
+}
